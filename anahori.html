@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<!--MadeBy Nzt3-->
+<html>
+    <head>
+        <title>
+            穴掘り法による迷路自動生成
+        </title>
+        <meta charset="UTF-8">
+        <style type="text/css">
+            body{
+                color: black;
+                background-color: blanchedalmond;
+                margin: 0px;
+                padding: 0px;
+            }
+            p {
+                white-space: nowrap;
+            }
+            #header{
+                color: dodgerblue;
+                background-color: chartreuse; 
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                text-align: center;
+                width: 100%;
+            }
+            #setting{
+                position: absolute;
+                top:80px;
+                text-align: center;
+                width:100%;
+            }
+            #maze{
+                position: absolute;
+                top:200px;
+                width: 100%;
+                text-align: center;
+            }
+            #maze{
+                line-height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id=header>
+            <h1>迷路生成</h1>
+        </div>
+        <div id = setting>
+        <p>
+            大きさを設定してから「生成する」を押してね！
+        </p>
+        <p style="font-size: 50%;">
+            10~50がいいんじゃないかな？
+        </p>
+        <form name="makebtn">
+            <input id="size" type="number" value="10">
+            <input id="make" type="button" value="生成する">
+        </form>
+        </div>
+        <p id="maze"></p>
+        <script type="text/javascript">
+            var btn = document.getElementById('make');
+
+            function make(){
+                var size = document.getElementById('size').value;
+                var H = size * 2 + 1;
+                var allmap = [];
+                for (i=0;i<H;i++){
+                    allmap.push('F');
+                };
+                for (i=0;i<H-2;i++){
+                    allmap.push('F');
+                    for(j=0;j<H-2;j++){
+                        allmap.push('T');
+                    };
+                    allmap.push('F');
+                };
+                for (i=0;i<H;i++){
+                    allmap.push('F');
+                };
+                var pointer = H+1;
+                var route = [];
+                allmap[pointer]="F";
+                route.push(pointer);
+                while(route.length > 0){
+                    var isend = 1;
+                    var ransu =[2,-2,H*2,-H*2];
+                    var target = 0;
+                    for(i=0;i<4;i++){
+                        var n = Math.floor(ransu.length * Math.random());
+                        target = ransu[n];
+                        ransu.splice(n,1);
+                        if(allmap[pointer+target] === "T"){
+                            isend = 0;
+                            break;
+                        };
+                    };
+                    if(isend === 0){
+                        for(i=0;i<2;i++){
+                            pointer = pointer + target/2;
+                            allmap[pointer]="F";
+                            route.push(pointer);
+                        };
+                    }else{
+                        route.pop();
+                        route.pop();
+                        pointer = route[route.length-1];
+                    };
+                };
+                pointer = 0;
+                for(i=0;i<H;i++){
+                    allmap[pointer]="T";
+                    pointer++;
+                };
+                for(i=0;i<H-2;i++){
+                    allmap[pointer]="T";
+                    pointer = pointer + H;
+                    allmap[pointer-1]="T";
+                };
+                for(i=0;i<H;i++){
+                    allmap[pointer]="T";
+                    pointer++
+                }
+                allmap[H]="F";
+                allmap[allmap.length-H-1]="F";
+                console.log(allmap);
+                var maze = "";
+                pointer = 0;
+                for (i=0;i<H;i++){
+                    for(j=0;j<H;j++){
+                        if(allmap[pointer]==="T"){
+                            maze = maze + "鬱"; //ここが鬱なのは密度が高く正方形に近い文字が思いつかなかったからです。思いついたら変えるかもしれません。
+                        }else{
+                            maze = maze + "　";
+                        }
+                        pointer++;
+                    }
+                    maze = maze + "<br/>";
+                }
+                document.getElementById('maze').innerHTML = maze;
+                document.getElementById('maze').style="font-size:" + 50/H +"em";
+            }
+
+            btn.onclick = make;
+        </script>
+    </body>
+</html>
